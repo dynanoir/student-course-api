@@ -1,4 +1,4 @@
-name: Tests CI
+name: Tests & Lint CI
 
 on:
   push:
@@ -13,10 +13,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      # 1️⃣ Récupère le code du dépôt
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2️⃣ Installe Node.js (version LTS recommandée)
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: 20
+          cache: 'npm'
+
+      # 3️⃣ Installe les dépendances
       - name: Install dependencies
-        run: npm install
+        run: npm ci
+
+      # 4️⃣ Vérifie la qualité du code avec ESLint
+      - name: Run ESLint
+        run: npm run lint
+
+      # 5️⃣ Lance les tests unitaires et d'intégration
+      - name: Run tests
+        run: npm test
+
+      # 6️⃣ (Optionnel) Affiche la couverture de tests dans la console
+      - name: Show coverage
+        if: success()
+        run: |
+          echo "✅ Tests et lint passés avec succès !"
